@@ -1,0 +1,9 @@
+[package]
+name = "splittable-random"
+version = "0.1.0"
+authors = ["Chris <98064596+puzzledBox@users.noreply.github.com>"]
+edition = "2018"
+
+[dependencies]
+fnv = "1.0.6"
+xorshift = "0.1.3"
