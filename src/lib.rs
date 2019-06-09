@@ -1,6 +1,7 @@
 use fnv::FnvHasher;
 use std::hash::Hasher;
-use xorshift::{Rng, SeedableRng, SplitMix64, Xorshift1024};
+use rand_xoshiro::Xoshiro512StarStar;
+use rand::{SeedableRng, RngCore};
 
 const LARGEST_SAFE_INDEX: u8 = 61;
 
@@ -11,20 +12,19 @@ const LARGEST_SAFE_INDEX: u8 = 61;
 pub struct SplittingRng {
     origin: u64,
     steps: u64,
-    prng: Xorshift1024,
+    prng: Xoshiro512StarStar,
     bool_pool: BooleanList,
 }
 
 impl SplittingRng {
     pub fn new(origin: u64) -> Self {
-        let mut weak_rng: SplitMix64 = SeedableRng::from_seed(origin);
-        let seed: Vec<_> = (0..16_i32).map(|_| weak_rng.next_u64()).collect();
-        let mut root_rng: Xorshift1024 = SeedableRng::from_seed(seed.as_ref());
+        let mut root_rng: Xoshiro512StarStar = SeedableRng::seed_from_u64(origin);
+        let bool_p = BooleanList::new(root_rng.next_u64());
         SplittingRng {
             origin: origin,
             steps: 0,
             prng: root_rng,
-            bool_pool: BooleanList::new(root_rng.next_u64()),
+            bool_pool: bool_p,
         }
     }
     /// Catch up this rng to a certain number of steps in the future
