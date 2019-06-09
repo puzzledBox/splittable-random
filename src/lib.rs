@@ -67,6 +67,22 @@ impl SplittingRng {
     pub fn roll(&mut self, sides: u32) -> u32 {
         ((self.step() >> 3) % (sides as u64)) as u32
     }
+    //Note - use of roll() makes this distribution imperfect
+    pub fn choose(&mut self, items: &[u16]) -> Option<usize> {
+        if items.len() > (std::u16::MAX as usize) {
+           return None;
+        }
+        let range_max = items.iter().map(|i| *i as u32).sum();
+        let mut dest: u32 = self.roll(range_max);
+        for (idx, item) in items.iter().enumerate() {
+            let item = *item as u32;
+            if item > dest {
+                return Some(idx)
+            }
+            dest -= item;
+        }
+        None
+    }
     pub fn shuffle<T>(&mut self, list: &[T]) -> Vec<T>
     where
         T: Copy,
