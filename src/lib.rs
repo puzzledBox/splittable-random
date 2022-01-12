@@ -143,10 +143,11 @@ impl<T: RngCore + SeedableRng> SplittingRng<T> {
     ///
     /// Unlike rolling, this shuffle is theoretically perfect
     /// Therefore, when rolling without replacement, this implementation
-    /// is superior to rolling
+    /// is superior to rolling if you can tolerate the use of ~64 bits of
+    /// temporary allocation per item in the input slice.
     ///
     /// When rolling on a list with replacement, it is suggested
-    /// to shuffle that list at intervals if using `biased_roll`
+    /// to shuffle that list at intervals if using `biased_roll`.
     pub fn shuffle<L>(&mut self, list: &[L]) -> Vec<L>
     where
         L: Copy,
