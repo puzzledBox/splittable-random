@@ -1,7 +1,7 @@
 use fnv::FnvHasher;
-use std::hash::Hasher;
+use rand::{RngCore, SeedableRng};
 use rand_xoshiro::Xoshiro512StarStar;
-use rand::{SeedableRng, RngCore};
+use std::hash::Hasher;
 
 const LARGEST_SAFE_INDEX: u8 = 61;
 
@@ -38,9 +38,15 @@ impl SplittingRng {
         result.bool_pool.last = bools.1;
         result
     }
-    /// Dump this rng and its current state to disk
+    /// Dump this rng and its current state to numbers
+    /// FIXME: Remove and use actual serialization
     pub fn to_raw(&self) -> (u64, u64, u64, u8) {
-        (self.origin, self.steps, self.bool_pool.inner, self.bool_pool.last)
+        (
+            self.origin,
+            self.steps,
+            self.bool_pool.inner,
+            self.bool_pool.last,
+        )
     }
     pub fn child(&mut self) -> SplittingRng {
         SplittingRng::new(self.step())
@@ -50,13 +56,14 @@ impl SplittingRng {
             return r;
         }
         self.bool_pool = BooleanList::new(self.step());
-        return self.bool_pool
+        return self
+            .bool_pool
             .next()
             .expect("Failed to use brand new boolean pool");
     }
     pub fn get_u32(&mut self) -> u32 {
         //Try to shift away the lowest bits
-        return (self.step()  >> 32) as u32;
+        return (self.step() >> 32) as u32;
     }
     pub fn get_u64(&mut self) -> u64 {
         self.step()
@@ -65,19 +72,22 @@ impl SplittingRng {
     //Note - distribution is not even, because the possible values are probably not perfectly
     //divisible by the number of sides
     pub fn roll(&mut self, sides: u32) -> u32 {
+        if sides == 0 {
+            return 0;
+        }
         ((self.step() >> 3) % (sides as u64)) as u32
     }
     //Note - use of roll() makes this distribution imperfect
     pub fn choose(&mut self, items: &[u16]) -> Option<usize> {
         if items.len() > (std::u16::MAX as usize) {
-           return None;
+            return None;
         }
         let range_max = items.iter().map(|i| *i as u32).sum();
         let mut dest: u32 = self.roll(range_max);
         for (idx, item) in items.iter().enumerate() {
             let item = *item as u32;
             if item > dest {
-                return Some(idx)
+                return Some(idx);
             }
             dest -= item;
         }
