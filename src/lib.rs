@@ -1,3 +1,7 @@
+// This software is licensed under the Apache 2.0
+// or MIT license, at your option; and may be used
+// and reproduced under only those terms.
+
 use fnv::FnvHasher;
 use rand::{RngCore, SeedableRng};
 use std::hash::Hasher;
