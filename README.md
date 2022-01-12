@@ -3,7 +3,7 @@
 
 ## What's a splitting RNG?
 
-A splitting RNG is a random number generator with the interesting property that, in addition to providing random numbers, it provide a new random number generator 'split' from itself. The split child RNG has a deterministic starting state, created from the output of the original RNG. So long as all the number generation in a codebase descends from a single root generator\* the randomness is *deterministic* - the program will behave the same if the inital seed of the inital RNG is the same. This allows for users to share seeds in procedural games - generating the same world each time on different devices, or the same item drops in a speed run.
+A splitting RNG is a random number generator with the interesting property that, in addition to providing random numbers, it can provide a new random number generator 'split' from itself. The split child RNG has a deterministic starting state, created by and distinct from the state of the original RNG. So long as all the number generation in a codebase descends from a single root generator\* the randomness is *deterministic* - the program will behave the same if the inital seed of the inital RNG is the same. This allows for users to share seeds in procedural games - generating the same world each time on different devices, or the same item drops in a speed run. It has uses in other fields, and for some kinds of testing.
 
 ## Example
 
