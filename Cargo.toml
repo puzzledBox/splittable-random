@@ -3,6 +3,7 @@ name = "splittable-random"
 version = "0.1.0"
 authors = ["Chris <98064596+puzzledBox@users.noreply.github.com>"]
 edition = "2021"
+publish = false
 
 [dependencies]
 fnv = "1.0.7"
